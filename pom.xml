@@ -7,7 +7,7 @@
     <groupId>limited.lambda</groupId>
     <artifactId>sigma-java</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
     <name>sigma</name>
 
     <properties>
