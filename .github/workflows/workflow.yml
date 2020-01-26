@@ -1,0 +1,44 @@
+name: Lambda Maven Workflow
+
+# Build Rho Client and run unit tests on each push
+
+# If a release is published then compile and deploy
+# a package corresponding to the release in the github package repository
+
+
+on:
+  push:
+  release:
+    types: [published]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+      
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+        server-id: lambda-repo # Value of the distributionManagement/repository/id field of the pom.xml
+        server-username: REPO_USERNAME # env variable for username in deploy
+        server-password: REPO_TOKEN # env variable for token in deploy:  
+        
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml   
+      env:
+        REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
+        REPO_TOKEN: ${{ secrets.REPO_TOKEN }}      
+      
+    - if: github.event_name == 'release'
+      name: Deploy package to Lambda Maven repository
+      run: mvn deploy
+      env:
+        REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
+        REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+        
+        
