@@ -36,14 +36,14 @@ public class Types {
         TYPENAME_TO_TYPE.clear();
     }
 
-   /**
+    /**
      * coerce the value to be of type k.
      *
      * This is required when reading numeric values since the exact numeric type
-     * cannot be determine by the Reader. The reader therefore reads
-     * all numbers as a BigDecimal which can be narrowed for assignments.
-     * coerceType will not convert floating point number to integers and will
-     * not allow integer conversions that lose precision.
+     * cannot be determine by the Reader. The reader therefore reads all numbers
+     * as a BigDecimal which can be narrowed for assignments. coerceType will
+     * not convert floating point number to integers and will not allow integer
+     * conversions that lose precision.
      *
      * coerce will also convert container types (maps and lists) provided the
      * containers implement the same interface.
@@ -57,6 +57,16 @@ public class Types {
      */
     public static Object coerceType(Object value, Class<?> k) throws SigmaException {
         try {
+            if (k == void.class || k == Void.class) {
+                return null;
+            }
+            if (value == null) {
+                if (k.isPrimitive()) {
+                    throw new SigmaException(String.format("unable to coerce null to type '%s'", k.getName()));
+                } else {
+                    return null;
+                }
+            }
             if (k.isAssignableFrom(value.getClass())) {
                 return value;  // assignment compatible already (ie value is a subclass of k)
             }
